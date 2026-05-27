@@ -1,14 +1,14 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copia todo el código de una vez (más simple)
+# Copia todo el código
 COPY . .
 
 # Restaura dependencias
-RUN dotnet restore "BreakoutAPI/BreakoutAPI.csproj"
+RUN dotnet restore "BreakoutAPI.csproj"
 
 # Publica la aplicación
-RUN dotnet publish "BreakoutAPI/BreakoutAPI.csproj" -c Release -o /app/publish --no-restore
+RUN dotnet publish "BreakoutAPI.csproj" -c Release -o /app/publish --no-restore
 
 # Etapa final
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
