@@ -1,26 +1,21 @@
-# Etapa de build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copia solo los archivos de proyecto y restaura dependencias (mejora cache)
-COPY *.sln .
-COPY */*.csproj ./
-RUN for file in $(ls *.csproj); do mkdir -p ${file%.*}/ && cp $file ${file%.*}/; done
-
-# Restaura paquetes
-RUN dotnet restore
-
-# Copia todo el código y publica
+# Copia todo el código de una vez (más simple)
 COPY . .
-RUN dotnet publish -c Release -o /app/publish --no-restore
 
-# Etapa final (más ligera)
+# Restaura dependencias
+RUN dotnet restore "BreakoutAPI/BreakoutAPI.csproj"
+
+# Publica la aplicación
+RUN dotnet publish "BreakoutAPI/BreakoutAPI.csproj" -c Release -o /app/publish --no-restore
+
+# Etapa final
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
 
-# Puerto que usa Render (importante)
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "BreakoutAPI.dll"]   # ← Cambia esto por el nombre de tu DLL
+ENTRYPOINT ["dotnet", "BreakoutAPI.dll"]
