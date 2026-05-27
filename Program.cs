@@ -3,9 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ==================== CONFIGURACIÓN PARA RENDER ====================
-builder.WebHost.UseUrls("http://0.0.0.0:8080");   // ← Importante para Render
-// ================================================================
+builder.WebHost.UseUrls("http://0.0.0.0:8080");
 
 builder.Services.AddControllers();
 
@@ -26,6 +24,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// ←←← Agrega esto
+app.MapGet("/", () => Results.Ok(new
+{
+    message = "BreakoutAPI está funcionando correctamente 🚀",
+    status = "Online"
+}));
+
 app.MapControllers();
 
-app.Run();   // ← Sin puerto aquí (usa el configurado arriba)
+app.Run();
